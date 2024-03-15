@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import { App, Stack } from 'aws-cdk-lib';                 // core constructs
 import { ThumbnailGeneratorStack } from '../lib/thumbnail-generator-stack';
 
-const app = new cdk.App();
+const app = new App();
 new ThumbnailGeneratorStack(app, 'ThumbnailGeneratorStack');

@@ -1,10 +1,15 @@
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { App, Stack } from 'aws-cdk-lib';               
+import { aws_s3 as s3 } from 'aws-cdk-lib';     
+import * as codestar from '@aws-cdk/aws-codestar-alpha'; 
+import { aws_lambda } from 'aws-cdk-lib';
+import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+// import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
 
-export class ThumbnailGeneratorStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+
+export class ThumbnailGeneratorStack extends Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Create source bucket
@@ -18,10 +23,10 @@ export class ThumbnailGeneratorStack extends cdk.Stack {
     });
 
     // Create Lambda function to generate thumbnails
-    const thumbnailFunction = new lambda.Function(this, 'ThumbnailFunction', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+    const thumbnailFunction = new aws_lambda.Function(this, 'ThumbnailFunction', {
+      runtime: aws_lambda.Runtime.NODEJS_16_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('lambda'), // Assuming your Lambda code is in a 'lambda' directory
+      code: aws_lambda.Code.fromAsset('lambda'), // Assuming your aws_lambda code is in a 'lambda' directory
       environment: {
         THUMBNAILS_BUCKET_NAME: thumbnailsBucket.bucketName,
         DESTINATION_BUCKET_NAME: thumbnailsBucket.bucketName
@@ -33,7 +38,7 @@ export class ThumbnailGeneratorStack extends cdk.Stack {
     sourceBucket.grantRead(thumbnailFunction);
     thumbnailsBucket.grantReadWrite(thumbnailFunction); 
 
-    // Configure Lambda function to be triggered by S3 events
+    // Configure aws_lambda function to be triggered by S3 events
     thumbnailFunction.addEventSource(new S3EventSource(sourceBucket, {
       events: [s3.EventType.OBJECT_CREATED]
     }));
